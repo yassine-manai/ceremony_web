@@ -3,129 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - QR Code Management</title>
+    <title>Admin Dashboard - ISET Rades Ceremony Access</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <h1 class="nav-logo">QR System</h1>
-            <ul class="nav-menu">
-                <li><a href="index.html" class="nav-link">Home</a></li>
-                <li><a href="admin.html" class="nav-link active">Admin Panel</a></li>
-                <li><a href="scanner.html" class="nav-link">Scanner</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <main class="admin-container">
-        <div class="admin-header">
-            <h2>Student Management</h2>
-            <button class="btn btn-primary" onclick="showAddStudentModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 5v14M5 12h14"/>
-                </svg>
-                Add Student
-            </button>
-        </div>
-
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                </div>
-                <div class="stat-content">
-                    <h3>Total Students</h3>
-                    <p id="totalStudents">0</p>
-                </div>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <h1 class="nav-logo">ISET Rades Ceremony</h1>
+                <h2>Admin Login</h2>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div class="stat-content">
-                    <h3>Scanned QR Codes</h3>
-                    <p id="scannedQRs">0</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div class="stat-content">
-                    <h3>Pending QR Codes</h3>
-                    <p id="pendingQRs">0</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Card Number</th>
-                        <th>QR Status</th>
-                        <th>Created At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="studentsTableBody">
-                    <!-- Data will be loaded here -->
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <!-- Add Student Modal -->
-    <div id="addStudentModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add New Student</h3>
-                <button class="modal-close" onclick="closeAddStudentModal()">&times;</button>
-            </div>
-            <form id="addStudentForm" onsubmit="addStudent(event)">
+            <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label for="studentName">Student Name</label>
-                    <input type="text" id="studentName" required>
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required autocomplete="username">
                 </div>
                 <div class="form-group">
-                    <label for="studentEmail">Email</label>
-                    <input type="email" id="studentEmail" required>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required autocomplete="current-password">
                 </div>
-                <div class="form-group">
-                    <label for="cardNumber">Card Number</label>
-                    <input type="text" id="cardNumber" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeAddStudentModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Student</button>
-                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
             </form>
+            <div class="login-footer">
+                <a href="index.html" class="back-link">← Back to Home</a>
+            </div>
         </div>
     </div>
 
-    <!-- QR Code Modal -->
-    <div id="qrCodeModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Student QR Code</h3>
-                <button class="modal-close" onclick="closeQRModal()">&times;</button>
+    <!-- Admin Dashboard (hidden by default) -->
+    <div id="adminDashboard" style="display: none;">
+        <nav class="navbar">
+            <div class="nav-container">
+                <h1 class="nav-logo">ISET Rades Ceremony</h1>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="admin.html" class="nav-link active">Admin Panel</a></li>
+                    <li><a href="scanner.html" class="nav-link">Access Control</a></li>
+                    <li><button class="btn btn-secondary" onclick="logout()">Logout</button></li>
+                </ul>
             </div>
-            <div class="qr-display">
-                <img id="qrCodeImage" src="" alt="QR Code">
-                <p id="qrStudentName"></p>
+        </nav>
+
+        <main class="admin-container">
+            <div class="admin-header">
+                <h2>Guest Management</h2>
+                <button class="btn btn-primary" onclick="showAddStudentModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Add Guest
+                </button>
             </div>
-            <div class="form-actions">
-                <button class="btn btn-secondary" onclick="closeQRModal()">Close</button>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Guests</h3>
+                        <p id="totalStudents">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Checked In</h3>
+                        <p id="scannedQRs">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Pending Arrivals</h3>
+                        <p id="pendingQRs">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>ID Number</th>
+                            <th>Access Status</th>
+                            <th>Registered At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- Add Guest Modal -->
+        <div id="addStudentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add New Guest</h3>
+                    <button class="modal-close" onclick="closeAddStudentModal()">&times;</button>
+                </div>
+                <form id="addStudentForm" onsubmit="addStudent(event)">
+                    <div class="form-group">
+                        <label for="studentName">Guest Name</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentEmail">Email</label>
+                        <input type="email" id="studentEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardNumber">ID Number</label>
+                        <input type="text" id="cardNumber" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddStudentModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Guest</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Access Pass Modal -->
+        <div id="qrCodeModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Guest Access Pass</h3>
+                    <button class="modal-close" onclick="closeQRModal()">&times;</button>
+                </div>
+                <div class="qr-display">
+                    <img id="qrCodeImage" src="" alt="Access Pass QR Code">
+                    <p id="qrStudentName"></p>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="closeQRModal()">Close</button>
+                    <button class="btn btn-primary" onclick="printAccessPass()">Print Pass</button>
+                </div>
             </div>
         </div>
     </div>

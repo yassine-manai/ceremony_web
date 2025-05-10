@@ -1,10 +1,71 @@
+// Hardcoded scanner credentials
+const SCANNER_CREDENTIALS = {
+    username: 'scanner',
+    password: 'scan123'
+};
+
 let html5QrCode;
 let scanHistory = [];
 
-// Initialize scanner when page loads
+// Check authentication on page load
 document.addEventListener('DOMContentLoaded', () => {
+    checkScannerAuth();
+});
+
+function checkScannerAuth() {
+    const isLoggedIn = sessionStorage.getItem('scannerLoggedIn') === 'true';
+    
+    if (isLoggedIn) {
+        showScannerInterface();
+        initializeScanner();
+    } else {
+        showScannerLoginScreen();
+    }
+}
+
+function showScannerLoginScreen() {
+    document.getElementById('scannerLoginScreen').style.display = 'flex';
+    document.getElementById('scannerInterface').style.display = 'none';
+}
+
+function showScannerInterface() {
+    document.getElementById('scannerLoginScreen').style.display = 'none';
+    document.getElementById('scannerInterface').style.display = 'block';
+}
+
+function handleScannerLogin(event) {
+    event.preventDefault();
+    
+    const username = document.getElementById('scannerUsername').value;
+    const password = document.getElementById('scannerPassword').value;
+    
+    if (username === SCANNER_CREDENTIALS.username && password === SCANNER_CREDENTIALS.password) {
+        sessionStorage.setItem('scannerLoggedIn', 'true');
+        showScannerInterface();
+        initializeScanner();
+        showNotification('Scanner login successful', 'success');
+    } else {
+        showNotification('Invalid scanner credentials', 'error');
+    }
+}
+
+function scannerLogout() {
+    sessionStorage.removeItem('scannerLoggedIn');
+    showScannerLoginScreen();
+    document.getElementById('scannerLoginForm').reset();
+    showNotification('Logged out from scanner', 'success');
+    
+    // Stop scanner if running
+    if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop();
+    }
+}
+
+// Initialize scanner after successful login
+function initializeScanner() {
     // Check if running on HTTPS or localhost
     if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+        document.getElementById('securityWarning').style.display = 'block';
         showNotification('Camera access requires HTTPS connection', 'error');
         console.error('Camera access requires HTTPS. Current protocol:', window.location.protocol);
     }
@@ -18,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Camera API is not supported in this browser');
         showNotification('Camera not supported in this browser', 'error');
     }
-});
+}
 
 async function startScanning() {
     document.getElementById('startScanBtn').style.display = 'none';
@@ -219,7 +280,38 @@ function displayHistory() {
     });
 }
 
-// Add this function to test camera access
+// File upload scanner function
+function scanFile() {
+    const fileInput = document.getElementById('qr-input-file');
+    const file = fileInput.files[0];
+    if (!file) {
+        showNotification('Please select a file first', 'error');
+        return;
+    }
+
+    Html5Qrcode.scanFile(file, true)
+        .then(decodedText => {
+            onScanSuccess(decodedText, null);
+        })
+        .catch(err => {
+            showNotification('Failed to scan QR code from image', 'error');
+            console.error('File scan error:', err);
+        });
+}
+
+// Manual input processing
+function processManualInput() {
+    const manualInput = document.getElementById('manual-qr-input').value.trim();
+    if (!manualInput) {
+        showNotification('Please enter QR code data', 'error');
+        return;
+    }
+
+    onScanSuccess(manualInput, null);
+    document.getElementById('manual-qr-input').value = '';
+}
+
+// Test camera access function
 async function testCameraAccess() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -231,3 +323,10 @@ async function testCameraAccess() {
         return false;
     }
 }
+
+// Protect against unauthorized access
+window.addEventListener('storage', function(e) {
+    if (e.key === 'scannerLoggedIn' && e.newValue !== 'true') {
+        showScannerLoginScreen();
+    }
+});

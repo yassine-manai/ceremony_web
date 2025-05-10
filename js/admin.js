@@ -1,6 +1,59 @@
-// Load students when page loads
-document.addEventListener('DOMContentLoaded', loadStudents);
+// Hardcoded credentials
+const ADMIN_CREDENTIALS = {
+    username: 'admin',
+    password: 'admin123'
+};
 
+// Check if user is logged in on page load
+document.addEventListener('DOMContentLoaded', function() {
+    checkAuth();
+});
+
+function checkAuth() {
+    const isLoggedIn = sessionStorage.getItem('adminLoggedIn') === 'true';
+    
+    if (isLoggedIn) {
+        showDashboard();
+        loadStudents();
+    } else {
+        showLoginScreen();
+    }
+}
+
+function showLoginScreen() {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('adminDashboard').style.display = 'none';
+}
+
+function showDashboard() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminDashboard').style.display = 'block';
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+        sessionStorage.setItem('adminLoggedIn', 'true');
+        showDashboard();
+        loadStudents();
+        showNotification('Login successful', 'success');
+    } else {
+        showNotification('Invalid credentials', 'error');
+    }
+}
+
+function logout() {
+    sessionStorage.removeItem('adminLoggedIn');
+    showLoginScreen();
+    document.getElementById('loginForm').reset();
+    showNotification('Logged out successfully', 'success');
+}
+
+// Student management functions
 async function loadStudents() {
     try {
         const students = await api.get('/students');
@@ -22,8 +75,8 @@ function displayStudents(students) {
             <td>${student.email}</td>
             <td>${student.card_number}</td>
             <td>
-                <span class="status-badge ${student.qr_code_status ? 'scanned' : 'pending'}">
-                    ${student.qr_code_status ? 'Scanned' : 'Pending'}
+                <span class="status-badge ${student.qr_code_status ? 'scanned' : 'not_scanned'}">
+                    ${student.qr_code_status ? 'Scanned' : 'Not Scanned'}
                 </span>
             </td>
             <td>${formatDate(student.created_at)}</td>
@@ -107,3 +160,10 @@ window.onclick = function(event) {
         event.target.classList.remove('active');
     }
 }
+
+// Protect against unauthorized access
+window.addEventListener('storage', function(e) {
+    if (e.key === 'adminLoggedIn' && e.newValue !== 'true') {
+        showLoginScreen();
+    }
+});
