@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Scanner - QR Code Management</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">QR System</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="admin.html" class="nav-link">Admin Panel</a></li>
+                <li><a href="scanner.html" class="nav-link active">Scanner</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="scanner-container">
+        <div class="scanner-header">
+            <h2>QR Code Scanner</h2>
+            <p>Scan student QR codes to verify and mark attendance</p>
+        </div>
+
+        <!-- Security Warning -->
+        <div id="securityWarning" class="warning-box" style="display: none;">
+            <h3>⚠️ Secure Connection Required</h3>
+            <p>Camera access requires HTTPS. You can:</p>
+            <ul>
+                <li>Access via <a href="https://localhost:8080">https://localhost</a></li>
+                <li>Use the file upload option below</li>
+                <li>Deploy to a secure server</li>
+            </ul>
+        </div>
+
+        <div class="scanner-content">
+            <!-- Camera Scanner -->
+            <div class="scanner-box">
+                <div id="reader"></div>
+                <div class="scanner-controls">
+                    <button id="startScanBtn" class="btn btn-primary" onclick="startScanning()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                            <circle cx="12" cy="13" r="4"/>
+                        </svg>
+                        Start Camera Scan
+                    </button>
+                    <button id="stopScanBtn" class="btn btn-secondary" onclick="stopScanning()" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        </svg>
+                        Stop Scanning
+                    </button>
+                </div>
+
+                <!-- Alternative: File Upload -->
+                <div class="alternative-scan" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
+                    <h3>Alternative: Upload QR Code Image</h3>
+                    <p>If camera access is not available, you can upload a QR code image:</p>
+                    <input type="file" id="qr-input-file" accept="image/*" class="file-input" style="margin: 1rem 0;">
+                    <button class="btn btn-primary" onclick="scanFile()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                        </svg>
+                        Scan Uploaded Image
+                    </button>
+                </div>
+
+                <!-- Manual Input -->
+                <div class="manual-input" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
+                    <h3>Manual QR Code Entry</h3>
+                    <p>Or enter the QR code data manually:</p>
+                    <input type="text" id="manual-qr-input" placeholder="Enter QR code data" class="form-input" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; margin: 1rem 0;">
+                    <button class="btn btn-secondary" onclick="processManualInput()">
+                        Submit QR Data
+                    </button>
+                </div>
+            </div>
+
+            <div class="scan-result">
+                <div id="scanResult" class="result-box">
+                    <p>Waiting for scan...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="scan-history">
+            <h3>Recent Scans</h3>
+            <div id="scanHistory" class="history-list">
+                <!-- Scan history will be added here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Load the html5-qrcode library -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.4/html5-qrcode.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/scanner.js"></script>
+    <script>
+        // Show security warning if not on HTTPS
+        if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+            document.getElementById('securityWarning').style.display = 'block';
+        }
+
+        // File upload scanner
+        function scanFile() {
+            const fileInput = document.getElementById('qr-input-file');
+            const file = fileInput.files[0];
+            if (!file) {
+                showNotification('Please select a file first', 'error');
+                return;
+            }
+
+            Html5Qrcode.scanFile(file, true)
+                .then(decodedText => {
+                    onScanSuccess(decodedText, null);
+                })
+                .catch(err => {
+                    showNotification('Failed to scan QR code from image', 'error');
+                    console.error('File scan error:', err);
+                });
+        }
+
+        // Manual input processing
+        function processManualInput() {
+            const manualInput = document.getElementById('manual-qr-input').value.trim();
+            if (!manualInput) {
+                showNotification('Please enter QR code data', 'error');
+                return;
+            }
+
+            onScanSuccess(manualInput, null);
+            document.getElementById('manual-qr-input').value = '';
+        }
+    </script>
+</body>
+</html>
