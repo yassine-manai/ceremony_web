@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = 'http://20.0.0.137:5400/api';
+const API_BASE_URL = 'http://localhost:5400/api';
 
 // Common utility functions
 const api = {
